@@ -33,7 +33,7 @@ EOS
 }
 
 function _code() {
-	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url, .path, .repository.full_name] | @tsv"
+	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url, .path, .repository.full_name] | @tsv" --paginate
 }
 
 function _fzf() {
