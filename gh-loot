@@ -33,9 +33,7 @@ EOS
 }
 
 function _code() {
-	local query
-	query="$(_encode "${*}")"
-	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url] | @tsv"
+	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url, .path] | @tsv"
 }
 
 function _fzf() {
@@ -44,7 +42,8 @@ function _fzf() {
 		--with-nth=1 \
 		--header "${KEYBINDINGS}" \
 		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|less" \
-		--bind "ctrl-o:execute(gh repo view {1} -w &>/dev/null &)"
+		--bind "ctrl-o:execute(gh repo view {1} -w &>/dev/null &)" \
+		--bind "ctrl-s:execute(mkdir -p \$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {3})"
 }
 
 
@@ -64,6 +63,7 @@ function _main() {
 
 	if [[ "${#}" -le 0 ]]; then
 		_help
+		echo
 		_err "Must require arguments..."
 		return 1
 	fi
