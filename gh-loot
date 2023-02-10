@@ -6,7 +6,7 @@ readonly GITHUB_URL="https://github.com"
 readonly AUTHOR="b0z"
 readonly KEYBINDINGS="\
 Ctrl+O   open with browser
-Enter    view README"
+Ctrl+S   save current file in local directory (the file path is preprend with owner and repo)"
 
 function _version() {
 	cat <<EOS
@@ -33,7 +33,7 @@ EOS
 }
 
 function _code() {
-	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url, .path] | @tsv"
+	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url, .path, .repository.full_name] | @tsv"
 }
 
 function _fzf() {
@@ -42,8 +42,8 @@ function _fzf() {
 		--with-nth=1 \
 		--header "${KEYBINDINGS}" \
 		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|less" \
-		--bind "ctrl-o:execute(gh repo view {1} -w &>/dev/null &)" \
-		--bind "ctrl-s:execute(mkdir -p \$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {3})"
+		--bind "ctrl-o:execute(google-chrome {1}  &>/dev/null &)" \
+		--bind "ctrl-s:execute(mkdir -p {4}/\$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {3})"
 }
 
 
