@@ -43,7 +43,7 @@ function _fzf() {
 		--header "${KEYBINDINGS}" \
 		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|less" \
 		--bind "ctrl-o:execute(google-chrome {1}  &>/dev/null &)" \
-		--bind "ctrl-s:execute(mkdir -p {4}/\$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {3})"
+		--bind "ctrl-s:execute(mkdir -p {4}/\$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {4}/{3})"
 }
 
 
