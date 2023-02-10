@@ -44,7 +44,7 @@ function _fzf() {
 		--with-nth=1 \
 		--header "${KEYBINDINGS}" \
 		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|less" \
-		--bind "ctrl-o:execute(gh repo view {} -w &>/dev/null &)"
+		--bind "ctrl-o:execute(gh repo view {1} -w &>/dev/null &)"
 }
 
 
