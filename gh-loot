@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+readonly VERSION="0.0.1"
+readonly LICENSE="MIT"
+readonly GITHUB_URL="https://github.com"
+readonly AUTHOR="b0z"
+readonly KEYBINDINGS="\
+Ctrl+O   open with browser
+Enter    view README"
+
+function _version() {
+	cat <<EOS
+${THIS_CMD} v${VERSION}
+released under the ${LICENSE} license.
+    Author: ${AUTHOR} (${GITHUB_URL}/${AUTHOR})
+EOS
+}
+
+function _err() {
+	printf "[\e[31m ERR \e[m] %s\n" "${*}"
+}
+
+function _help() {
+	cat <<EOS
+gh loot-sh -- GitHub loot powered by fzf
+
+USAGE
+    gh loot-sh info
+    gh loot-sh code KEYWORDS
+    gh loot-sh -h|--help
+    gh loot-sh -V|--version
+EOS
+}
+
+function _code() {
+	local query
+	query="$(_encode "${*}")"
+	gh api --method=GET "search/code" -f q="${*}" --jq ".items[] | [.html_url, .git_url] | @tsv"
+}
+
+function _fzf() {
+	fzf </dev/stdin \
+		--multi \
+		--with-nth=1 \
+		--header "${KEYBINDINGS}" \
+		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|less" \
+		--bind "ctrl-o:execute(gh repo view {} -w &>/dev/null &)"
+}
+
+
+function _info() {
+	USER=$(gh api -X GET /user --jq ".login")
+	echo "Current user: $USER"
+	echo "Belonging to the following organizations"
+	gh api -X GET /user/orgs --jq ".[].login"
+}
+
+function _encode() {
+	echo -n "${*}" | od -tx1 -An | tr ' ' % | tr -d \\n
+}
+
+
+function _main() {
+
+	if [[ "${#}" -le 0 ]]; then
+		_help
+		_err "Must require arguments..."
+		return 1
+	fi
+
+	for arg in "${@}"; do
+		case "${arg}" in
+		-h | --help)
+			_help
+			return 0
+			;;
+		-V | --version)
+			_version
+			return 0
+			;;
+		info)
+			_info
+			return 0
+			;;
+		code)
+			_code "${*:2}" | _fzf
+			return 0
+			;;
+		esac
+	done
+}
+
+_main "${@}"
+exit "${?}"
