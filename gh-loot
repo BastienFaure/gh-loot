@@ -6,7 +6,8 @@ readonly GITHUB_URL="https://github.com"
 readonly AUTHOR="b0z"
 readonly KEYBINDINGS="\
 Ctrl+O   open with browser
-Ctrl+S   save current file in local directory (the file path is preprend with owner and repo)"
+Ctrl+S   save current file in local directory (the file path is preprend with owner and repo)
+Ctrl+B   save the current file URL into the clipboard"
 
 function _version() {
 	cat <<EOS
@@ -22,13 +23,13 @@ function _err() {
 
 function _help() {
 	cat <<EOS
-gh loot-sh -- GitHub loot powered by fzf
+gh loot -- GitHub loot powered by fzf
 
 USAGE
-    gh loot-sh info
-    gh loot-sh code KEYWORDS
-    gh loot-sh -h|--help
-    gh loot-sh -V|--version
+    gh loot info
+    gh loot code KEYWORDS
+    gh loot -h|--help
+    gh loot -V|--version
 EOS
 }
 
@@ -41,9 +42,10 @@ function _fzf() {
 		--multi \
 		--with-nth=1 \
 		--header "${KEYBINDINGS}" \
-		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|less" \
+		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|bat" \
 		--bind "ctrl-o:execute(google-chrome {1}  &>/dev/null &)" \
-		--bind "ctrl-s:execute(mkdir -p {4}/\$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {4}/{3})"
+		--bind "ctrl-s:execute(mkdir -p {4}/\$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {4}/{3})" \
+		--bind "ctrl-u:execute(echo {1}|xsel -b)"
 }
 
 
