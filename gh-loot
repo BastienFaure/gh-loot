@@ -7,7 +7,7 @@ readonly AUTHOR="b0z"
 readonly KEYBINDINGS="\
 Ctrl+O   open with browser
 Ctrl+S   save current file in local directory (the file path is preprend with owner and repo)
-Ctrl+B   save the current file URL into the clipboard"
+Ctrl+U   save the current file URL into the clipboard"
 
 function _version() {
 	cat <<EOS
@@ -45,7 +45,7 @@ function _fzf() {
 		--preview "gh api --method=GET {2} --jq '.content'|base64 -d|bat" \
 		--bind "ctrl-o:execute(google-chrome {1}  &>/dev/null &)" \
 		--bind "ctrl-s:execute(mkdir -p {4}/\$(dirname {3}); gh api --method=GET {2} --jq '.content'|base64 -d > {4}/{3})" \
-		--bind "ctrl-u:execute(echo {1}|xsel -b)"
+		--bind "ctrl-u:execute(printf {1}|xsel -b)"
 }
 
 
